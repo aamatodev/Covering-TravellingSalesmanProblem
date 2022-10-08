@@ -1,5 +1,6 @@
 # The code for changing pages was derived from: http://stackoverflow.com/questions/7546050/switch-between-two-frames-in-tkinter
 # License: http://creativecommons.org/licenses/by-sa/3.0/
+import os
 
 import matplotlib
 import networkx as nx
@@ -88,7 +89,7 @@ class GraphPage(tk.Frame):
 
         ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
 
-        greedyPath = greedy(adjMatrix,300,population,5)
+        greedyPath = greedy(adjMatrix,120,population,5)
 
         i = 0
         while i < (len(greedyPath) - 1):
