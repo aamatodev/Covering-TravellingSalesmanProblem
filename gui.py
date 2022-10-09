@@ -8,6 +8,7 @@ import numpy as np
 from random import randint
 
 from greedy import greedy
+from threeOPT import ThreeOPT
 
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
@@ -52,16 +53,6 @@ class GraphPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
-        # Initialize GUI components
-        self.grid(padx=20, pady=20)
-        self.columnconfigure(1, weight=1)
-        # Buttons
-        self.DisplayButtons()
-        # Slider
-        self.DisplaySlider()
-
-        # Graph
-
         node_array = []
 
         with open('Berlin52.txt', newline='') as csvfile:
@@ -80,39 +71,42 @@ class GraphPage(tk.Frame):
 
         adjMatrix = self.calculateADJMatrix(fullData[:, :2])
 
-        G = nx.DiGraph()
-        for i in range(len(fullData)):
-            G.add_node(i, pos=(fullData[i][0], fullData[i][1]))
+        path = []
 
-        fig, ax = plt.subplots()
-        ax.set_axis_on()
+        # Initialize GUI components
+        self.grid(padx=20, pady=20)
+        self.columnconfigure(1, weight=1)
+        # Buttons
+        self.DisplayButtons(fullData, population, adjMatrix)
+        # Slider
+        self.DisplaySlider()
 
-        ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
+        self.drawGraph(fullData, path)
 
-        greedyPath = greedy(adjMatrix,120,population,5)
+    def greedyButton(self, fullData, adjMatrix, population):
+        path, cost = greedy(adjMatrix, 300, population, 5)
+        self.drawGraph(fullData, path)
 
-        i = 0
-        while i < (len(greedyPath) - 1):
-            G.add_edge(greedyPath[i], greedyPath[i + 1])
-            i += 1
+        print("Done")
 
-        pos = nx.get_node_attributes(G, 'pos')
-        nx.draw(G, pos, with_labels=True, cmap=plt.get_cmap('jet'))
+    def twoOPT(self):
+        print("HEYYY")
 
-        plt.show()
+    def threeOPTButton(self, fullData, adjMatrix, population):
+        greedyPath, greedyCost = greedy(adjMatrix, 300, population, 5)
 
-    #    f = plt.figure(figsize=(6, 6))
+        ThreeOPTPath, ThreeOPTCost = ThreeOPT(fullData, adjMatrix, population, greedyPath, greedyCost)
 
-    #  self.drawGraph(fullData[:, :2], np.array(test))
+        self.drawGraph(fullData, ThreeOPTPath)
 
-    def DisplayButtons(self):
-        greedy = tk.Button(self, text='Greedy')
-        twoOpt = tk.Button(self, text='2-OPT')
-        ThreeOpt = tk.Button(self, text='3-OPT')
+    def DisplayButtons(self, fullData, population, adjMatrix):
+        greedy = tk.Button(self, text='Greedy', command=lambda: self.greedyButton(fullData, adjMatrix, population))
+        twoOpt = tk.Button(self, text='2-OPT', command=self.twoOPT)
+        threeOpt = tk.Button(self, text='3-OPT', command=lambda: self.threeOPTButton(fullData, adjMatrix, population))
 
-        greedy.grid(row=0, column=0)
         twoOpt.grid(row=0, column=1)
-        ThreeOpt.grid(row=0, column=2)
+        greedy.grid(row=0, column=0)
+        threeOpt.grid(row=0, column=2)
 
     def DisplaySlider(self):
         DeltaSlider = tk.Scale(self, from_=0, to=100, length=600, orient=tk.HORIZONTAL)
@@ -120,39 +114,31 @@ class GraphPage(tk.Frame):
 
     def drawGraph(self, nodes, path):
 
-        fig, ax = plt.subplots(2, sharex=True, sharey=True)  # Prepare 2 plots
-        ax[0].set_title('Raw nodes')
-        ax[1].set_title('Optimized tour')
-        ax[0].scatter(nodes[:, 0], nodes[:, 1])  # plot A
-        ax[1].scatter(nodes[:, 0], nodes[:, 1])  # plot B
-        start_node = 0
-        distance = 0.
-        for i in range(len(path)):
-            start_pos = nodes[path[i]]
-            if (i + 1) < path.size:
-                end_pos = nodes[path[i + 1]]
-            else:
-                end_pos = nodes[path[0]]
-            # print(start_pos, " - ", end_pos)
-            ax[1].annotate("",
-                           xy=start_pos, xycoords='data',
-                           xytext=end_pos, textcoords='data',
-                           arrowprops=dict(arrowstyle="->",
-                                           connectionstyle="arc3"))
-            distance += np.linalg.norm(end_pos - start_pos)
+        f = plt.figure(figsize=(5, 4))
+        a = f.add_subplot(111)
 
-        textstr = "N nodes: %d\nTotal length: %.3f" % (path.size, distance)
-        props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
-        ax[1].text(0.05, 0.95, textstr, transform=ax[1].transAxes, fontsize=14,  # Textbox
-                   verticalalignment='top', bbox=props)
+        G = nx.DiGraph()
+        for i in range(len(nodes)):
+            G.add_node(i, pos=(nodes[i][0], nodes[i][1]))
 
-        plt.tight_layout()
-        plt.show()
+        i = 0
+        while i < (len(path) - 1):
+            G.add_edge(path[i], path[i + 1])
+            i += 1
 
-        # canvas = FigureCanvasTkAgg(fig, self)
+        pos = nx.get_node_attributes(G, 'pos')
+        nx.draw(G, pos, with_labels=True, cmap=plt.get_cmap('jet'))
 
-        # canvas.draw()
-        # canvas.get_tk_widget().grid(row=2, column=1)  # ERROR Tk.
+        # create matplotlib canvas using figure `f` and assign to widget `window`
+        canvas = FigureCanvasTkAgg(f, self)
+        canvas.draw()
+        # get canvas as tkinter's widget and `gird` in widget `window`
+        canvas.get_tk_widget().grid(row=2, column=1)
+
+        # navigation toolbar
+        toolbarFrame = tk.Frame(self)
+        toolbarFrame.grid(row=3, column=1)
+        toolbar = NavigationToolbar2Tk(canvas, toolbarFrame)
 
     def calculateADJMatrix(self, nodes):
         adjMatrix = []

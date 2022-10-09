@@ -16,8 +16,9 @@ def calculateRefund(startPoint, hubPoint, population, coveredNodeList, coveredNo
                 vaccinatedPopulation+=population[i]
 
     partialIncome -= adjMatrix[startPoint][hubPoint]
+    cost = adjMatrix[startPoint][hubPoint]
 
-    return coveredNodeList, coveredNodes, partialIncome, vaccinatedPopulation
+    return coveredNodeList, coveredNodes, partialIncome, vaccinatedPopulation, cost
 
 
 def greedy(adjMatrix, delta, population, refund, startNode=0):
@@ -26,6 +27,9 @@ def greedy(adjMatrix, delta, population, refund, startNode=0):
     coveredNodeList = [0] * len(adjMatrix[0])
     BKcoveredNodeList = [0] * len(adjMatrix[0])
     potentialCoveredNodeList = [0] * len(adjMatrix[0])
+
+    pathCost = 0
+    partialCost = 0
 
     startingHub = startNode
     potentialHub = 0
@@ -64,14 +68,17 @@ def greedy(adjMatrix, delta, population, refund, startNode=0):
 
     potentialCheckedNodes = 1
 
-    while potentialCheckedNodes < (len(adjMatrix[0])):
+    improvement = True
+
+    while potentialCheckedNodes < (len(adjMatrix[0])) and improvement:
         potentialVaccinatedPopulation=0
+        maxRefund = -100000
         for potentialHub in range(len(adjMatrix[0])):
             coveredNodeList = BKcoveredNodeList.copy()
 
             if startingHub != potentialHub and coveredNodeList[potentialHub] == 0 :
                 partialIncome = 0
-                coveredNodeList, coveredNodes, partialIncome, vaccinatedPopulation = calculateRefund(startingHub, potentialHub, population, coveredNodeList,
+                coveredNodeList, coveredNodes, partialIncome, vaccinatedPopulation, cost = calculateRefund(startingHub, potentialHub, population, coveredNodeList,
                                                                                coveredNodes, adjMatrix, delta, refund)
 
                 if maxRefund < partialIncome:
@@ -79,10 +86,10 @@ def greedy(adjMatrix, delta, population, refund, startNode=0):
                     nodeToAppend = potentialHub
                     potentialCoveredNodeList = coveredNodeList
                     potentialVaccinatedPopulation = vaccinatedPopulation
-                elif maxRefund > partialIncome and BKvaccinatedPopulation+potentialVaccinatedPopulation < minimumPopulation:
-                    nodeToAppend = potentialHub
-                    potentialCoveredNodeList = coveredNodeList
-                    potentialVaccinatedPopulation = vaccinatedPopulation
+                    partialCost = cost
+
+        if totalIncome + maxRefund < totalIncome and BKvaccinatedPopulation+potentialVaccinatedPopulation > minimumPopulation:
+            improvement = False
 
         BKcoveredNodeList = potentialCoveredNodeList
         BKcoveredNodeList[nodeToAppend] = 1
@@ -93,6 +100,7 @@ def greedy(adjMatrix, delta, population, refund, startNode=0):
         totalIncome += maxRefund
         BKvaccinatedPopulation+=potentialVaccinatedPopulation
         potentialCheckedNodes+=1
+        pathCost += partialCost
 
     print(totalIncome)
     print(BKcoveredNodeList)
@@ -100,7 +108,8 @@ def greedy(adjMatrix, delta, population, refund, startNode=0):
     print(path)
     print(BKvaccinatedPopulation)
     print(minimumPopulation)
-    return path
+    print("path cost - ", pathCost)
+    return path, pathCost
 
 
 #tsp = [[0, 20, 20, 20], [20, 0, 20, 20], [20, 20, 0, 20], [20, 20, 20, 0]]
