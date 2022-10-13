@@ -48,7 +48,7 @@ def greedy(adjMatrix, delta, population, refund, startNode=0):
 
     #Mancava da sommare nell'income totale il refund ottenuto dalla popolazione del nodo iniziale
     totalIncome+=population[startNode]*refund
-    BKvaccinatedPopulation+=population[0]
+    BKvaccinatedPopulation+=population[startNode]
 
     coveredNodes = 1
 

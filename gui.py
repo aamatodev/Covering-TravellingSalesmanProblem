@@ -1,5 +1,3 @@
-# The code for changing pages was derived from: http://stackoverflow.com/questions/7546050/switch-between-two-frames-in-tkinter
-# License: http://creativecommons.org/licenses/by-sa/3.0/
 import os
 
 import matplotlib
@@ -89,11 +87,13 @@ class GraphPage(tk.Frame):
 
         print("Done")
 
-    def twoOPT(self):
-        print("HEYYY")
+    def twoOPT(self, fullData, adjMatrix, population):
+        path = [13, 25, 46, 51, 28, 36, 32, 42, 11, 6, 30, 40, 10, 50, 13]
+        ThreeOPTPath, ThreeOPTCost = ThreeOPT(fullData, adjMatrix, population, path, 120000)
+        self.drawGraph(fullData, path)
 
     def threeOPTButton(self, fullData, adjMatrix, population):
-        greedyPath, greedyCost = greedy(adjMatrix, 300, population, 5)
+        greedyPath, greedyCost = greedy(adjMatrix, 450, population, 5)
 
         ThreeOPTPath, ThreeOPTCost = ThreeOPT(fullData, adjMatrix, population, greedyPath, greedyCost)
 
@@ -101,7 +101,7 @@ class GraphPage(tk.Frame):
 
     def DisplayButtons(self, fullData, population, adjMatrix):
         greedy = tk.Button(self, text='Greedy', command=lambda: self.greedyButton(fullData, adjMatrix, population))
-        twoOpt = tk.Button(self, text='2-OPT', command=self.twoOPT)
+        twoOpt = tk.Button(self, text='2-OPT', command=lambda: self.twoOPT(fullData, adjMatrix, population))
         threeOpt = tk.Button(self, text='3-OPT', command=lambda: self.threeOPTButton(fullData, adjMatrix, population))
 
         twoOpt.grid(row=0, column=1)
