@@ -13,9 +13,12 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import tkinter as tk
 import matplotlib.pyplot as plt
 import csv
+from opencity import openCity
 
 LARGE_FONT = ("Verdana", 12)
 
+DELTA= 300
+REFUND=5
 
 class CoveringTravellingSalesmanProblem(tk.Tk):
 
@@ -51,6 +54,8 @@ class GraphPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
+        # To remove and replace with openCity class
+
         node_array = []
 
         with open('Berlin52.txt', newline='') as csvfile:
@@ -71,18 +76,21 @@ class GraphPage(tk.Frame):
 
         path = []
 
+        cityList, population = openCity('Berlin52.txt', 'population.txt')
+
         # Initialize GUI components
         self.grid(padx=20, pady=20)
         self.columnconfigure(1, weight=1)
         # Buttons
-        self.DisplayButtons(fullData, population, adjMatrix)
+        self.DisplayButtons(fullData, population, adjMatrix, cityList)
         # Slider
         self.DisplaySlider()
 
         self.drawGraph(fullData, path)
 
-    def greedyButton(self, fullData, adjMatrix, population):
-        path, cost = greedy(adjMatrix, 300, population, 5)
+    def greedyButton(self, fullData, cityList, population):
+
+        path, cost = greedy(cityList, DELTA, population, REFUND)
         self.drawGraph(fullData, path)
 
         print("Done")
@@ -92,17 +100,21 @@ class GraphPage(tk.Frame):
         ThreeOPTPath, ThreeOPTCost = ThreeOPT(fullData, adjMatrix, population, path, 120000)
         self.drawGraph(fullData, path)
 
-    def threeOPTButton(self, fullData, adjMatrix, population):
-        greedyPath, greedyCost = greedy(adjMatrix, 450, population, 5)
+    def twoOPTButton(self, fullData, population, cityList):
+        greedyPath, greedyCost = greedy(cityList, DELTA, population, REFUND)
+
+
+    def threeOPTButton(self, fullData, adjMatrix, population, cityList):
+        greedyPath, greedyCost = greedy(cityList, DELTA, population, REFUND)
 
         ThreeOPTPath, ThreeOPTCost = ThreeOPT(fullData, adjMatrix, population, greedyPath, greedyCost)
 
         self.drawGraph(fullData, ThreeOPTPath)
 
-    def DisplayButtons(self, fullData, population, adjMatrix):
-        greedy = tk.Button(self, text='Greedy', command=lambda: self.greedyButton(fullData, adjMatrix, population))
-        twoOpt = tk.Button(self, text='2-OPT', command=lambda: self.twoOPT(fullData, adjMatrix, population))
-        threeOpt = tk.Button(self, text='3-OPT', command=lambda: self.threeOPTButton(fullData, adjMatrix, population))
+    def DisplayButtons(self, fullData, population, adjMatrix, cityList):
+        greedy = tk.Button(self, text='Greedy', command=lambda: self.greedyButton(fullData, cityList, population))
+        twoOpt = tk.Button(self, text='2-OPT', command=lambda: self.twoOPT(fullData, cityList, population))
+        threeOpt = tk.Button(self, text='3-OPT', command=lambda: self.threeOPTButton(fullData, adjMatrix, population, cityList))
 
         twoOpt.grid(row=0, column=1)
         greedy.grid(row=0, column=0)
