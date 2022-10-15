@@ -2,9 +2,6 @@ import csv
 
 import numpy as np, random, operator, pandas as pd, matplotlib.pyplot as plt
 
-from greedy import greedy
-
-
 class City:
     def __init__(self, id, x, y, population):
         self.id = id
@@ -77,7 +74,6 @@ def createRoute(cityList, population):
     route = []
     totalPopulation = np.sum(population)
     MinCover = random.randint(30,99) / 100
-    print(MinCover)
     coverage = 0
     coveredCities = [0] * len(cityList)
     alreadyVisited = []
@@ -89,7 +85,7 @@ def createRoute(cityList, population):
             selectedNode = random.randint(0, len(cityList)-1)
 
         alreadyVisited.append(cityList[selectedNode])
-        revenue, newCoveredCities, vaccinatedPopulation = cityList[selectedNode].CityRevenue(cityList, 300, coveredCities,
+        revenue, newCoveredCities, vaccinatedPopulation = cityList[selectedNode].CityRevenue(cityList, 100, coveredCities,
                                                                                           0, 5)
         coveredCities = newCoveredCities
         coverage += vaccinatedPopulation / totalPopulation
@@ -111,7 +107,7 @@ def initialPopulation(popSize, cityList, citiesPopulation):
 def rankRoutes(population, cityList, citiesPopulation):
     fitnessResults = {}
     for i in range(0, len(population)):
-        fitnessResults[i] = Fitness(population[i], cityList,300, citiesPopulation, 5).routeFitness()
+        fitnessResults[i] = Fitness(population[i], cityList, 100, citiesPopulation, 5).routeFitness()
     list = sorted(fitnessResults.items(), key=operator.itemgetter(1), reverse=True)
     return list
 
@@ -176,6 +172,7 @@ def breedPopulation(matingpool, eliteSize):
 
 
 def mutate(individual, mutationRate):
+
     for swapped in range(len(individual)):
         if (random.random() < mutationRate):
             swapWith = int(random.random() * len(individual))
@@ -249,10 +246,10 @@ route = []
 for i in path:
     route.append(City(id=i, x=fullData[i][0], y=fullData[i][1], population=population[i]))
 
-fitness = Fitness(route=route, cities=cityList, delta=300, populations=population, refund=5)
+#fitness = Fitness(route=route, cities=cityList, delta=300, populations=population, refund=5)
 
-print(fitness.fullRouteRevenue())
+#print(fitness.fullRouteRevenue())
 
 #print(createRoute(cityList, population))
 
-#geneticAlgorithm(cities=cityList,population = population, popSize=30, eliteSize=20, mutationRate=0.01, generations=200)
+geneticAlgorithm(cities=cityList,population = population, popSize=30, eliteSize=20, mutationRate=0.20, generations=200)

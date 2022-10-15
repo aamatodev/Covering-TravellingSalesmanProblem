@@ -82,14 +82,14 @@ class GraphPage(tk.Frame):
         self.drawGraph(fullData, path)
 
     def greedyButton(self, fullData, adjMatrix, population):
-        path, cost = greedy(adjMatrix, 300, population, 5)
+        path, cost = greedy(adjMatrix, 100, population, 5)
         self.drawGraph(fullData, path)
 
         print("Done")
 
     def twoOPT(self, fullData, adjMatrix, population):
-        path = [13, 25, 46, 51, 28, 36, 32, 42, 11, 6, 30, 40, 10, 50, 13]
-        ThreeOPTPath, ThreeOPTCost = ThreeOPT(fullData, adjMatrix, population, path, 120000)
+        path = [50, 17, 16, 1, 32, 37, 29, 27, 12, 10, 9, 42, 44, 45, 3, 11, 46, 33, 20, 2, 25, 28, 40, 24, 41, 19, 51, 26, 13, 15, 30, 0, 50]
+        #ThreeOPTPath, ThreeOPTCost = ThreeOPT(fullData, adjMatrix, population, path, 120000)
         self.drawGraph(fullData, path)
 
     def threeOPTButton(self, fullData, adjMatrix, population):
