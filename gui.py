@@ -7,6 +7,7 @@ from random import randint
 
 from greedy import greedy
 from threeOPT import ThreeOPT
+from twoOPT import TwoOPT
 
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
@@ -91,29 +92,33 @@ class GraphPage(tk.Frame):
     def greedyButton(self, fullData, cityList, population):
 
         path, cost = greedy(cityList, DELTA, population, REFUND)
-        self.drawGraph(fullData, path)
+        self.drawGraph(fullData, [p.id for p in path])
 
         print("Done")
 
-    def twoOPT(self, fullData, adjMatrix, population):
-        path = [13, 25, 46, 51, 28, 36, 32, 42, 11, 6, 30, 40, 10, 50, 13]
-        ThreeOPTPath, ThreeOPTCost = ThreeOPT(fullData, adjMatrix, population, path, 120000)
-        self.drawGraph(fullData, path)
+    # def twoOPT(self, fullData, adjMatrix, population):
+    #     path = [13, 25, 46, 51, 28, 36, 32, 42, 11, 6, 30, 40, 10, 50, 13]
+    #     ThreeOPTPath, ThreeOPTCost = ThreeOPT(fullData, adjMatrix, population, path, 120000)
+    #     self.drawGraph(fullData, path)
 
     def twoOPTButton(self, fullData, population, cityList):
-        greedyPath, greedyCost = greedy(cityList, DELTA, population, REFUND)
+        greedyPath, greedyGain = greedy(cityList, DELTA, population, REFUND)
+
+        TwoOPTPath, TwoOPTCost = TwoOPT(cityList,population,greedyPath,greedyGain,DELTA,REFUND)
+
+        self.drawGraph(fullData, [p.id for p in TwoOPTPath])
 
 
     def threeOPTButton(self, fullData, adjMatrix, population, cityList):
         greedyPath, greedyCost = greedy(cityList, DELTA, population, REFUND)
 
-        ThreeOPTPath, ThreeOPTCost = ThreeOPT(fullData, adjMatrix, population, greedyPath, greedyCost)
+        ThreeOPTPath, ThreeOPTCost = ThreeOPT(fullData, adjMatrix, population, [p.id for p in greedyPath], greedyCost)
 
         self.drawGraph(fullData, ThreeOPTPath)
 
     def DisplayButtons(self, fullData, population, adjMatrix, cityList):
         greedy = tk.Button(self, text='Greedy', command=lambda: self.greedyButton(fullData, cityList, population))
-        twoOpt = tk.Button(self, text='2-OPT', command=lambda: self.twoOPT(fullData, cityList, population))
+        twoOpt = tk.Button(self, text='2-OPT', command=lambda: self.twoOPTButton(fullData, population,cityList))
         threeOpt = tk.Button(self, text='3-OPT', command=lambda: self.threeOPTButton(fullData, adjMatrix, population, cityList))
 
         twoOpt.grid(row=0, column=1)

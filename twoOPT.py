@@ -4,123 +4,56 @@ import random
 import networkx as nx
 import numpy as np
 from matplotlib import pyplot as plt
+from fitness import Fitness
 
 
-def _improve(self, bestPath, pathCost, adjMatrix, size):
-    """
-    Breakable improvement loop, find an improving move and return to the
-    main loop to execute it, selects whether we look for the first
-    improving move or the best.
-    """
+def _improve(bestPath, bestGain, cityList, size, population, delta, refund):
+
     saved = None
-    bestChange = 1000000
 
-    # Choose 3 unique edges defined by their first node
-    for a in range(size - 5):
-        for c in range(a + 2, size - 3):
-            for e in range(c + 2, size - 1):
-                change = 0
-                # Now we have seven (sic) permutations to check
-                for i in range(7):
-                    # TODO improve this...
-                    path = exchange(bestPath, i, a, c, e)
+    # Choose 2 unique edges defined by their first node
+    for a in range(size - 3):
+        for c in range(a + 2, size):
+            path = exchange(bestPath, a, c)
 
-                    change = calculatePathCost(path, adjMatrix)
+            #change = calculatePathCost(path, adjMatrix)
+            change = Fitness(path, cityList, delta, population, refund).routeFitness()
 
-                    if change < bestChange:
-                        saved = a, c, e, i
-                        bestChange = change
+            if change > bestGain:
+                saved = a, c
+                bestGain = change
 
-    print(saved, bestChange)
+    print(saved, bestGain)
 
-    return saved, pathCost - bestChange
+    return saved, bestGain
 
 
-def calculatePathCost(path, adjMatrix):
-    cost = 0
-    for i in range(len(path) - 1):
-        cost += adjMatrix[path[i]][path[i + 1]]
-    return cost
+def exchange(p, a, c):
 
+    # without loss of generality, sort (???)
+    # a, b = sorted([a, b])
 
-def exchange(p, i, a, c, e, broad=False):
-    """In the broad sense, 3-opt means choosing any three edges ab, cd
-    and ef and chopping them, and then reconnecting (such that the
-    result is still a complete tour). There are eight ways of doing
-    it. One is the identity, 3 are 2-opt moves (because either ab, cd,
-    or ef is reconnected), and 4 are 3-opt moves (in the narrower
-    sense)."""
-    n = len(p)
+    b, d = a + 1, c + 1
 
-    # without loss of generality, sort
-    a, c, e = sorted([a, c, e])
-    b, d, f = a + 1, c + 1, e + 1
-
-    which = i
-
-    # in the following slices, the nodes abcdef are referred to by
-    # name. x:y:-1 means step backwards. anything like c+1 or d-1
-    # refers to c or d, but to include the item itself, we use the +1
-    # or -1 in the slice
-    if which == 0:
-        sol = p[:a + 1] + p[b:c + 1] + p[d:e + 1] + p[f:]  # identity
-    elif which == 1:
-        sol = p[:a + 1] + p[b:c + 1] + p[e:d - 1:-1] + p[f:]  # 2-opt
-    elif which == 2:
-        sol = p[:a + 1] + p[c:b - 1:-1] + p[d:e + 1] + p[f:]  # 2-opt
-    elif which == 3:
-        sol = p[:a + 1] + p[c:b - 1:-1] + p[e:d - 1:-1] + p[f:]  # 3-opt
-    elif which == 4:
-        sol = p[:a + 1] + p[d:e + 1] + p[b:c + 1] + p[f:]  # 3-opt
-    elif which == 5:
-        sol = p[:a + 1] + p[d:e + 1] + p[c:b - 1:-1] + p[f:]  # 3-opt
-    elif which == 6:
-        sol = p[:a + 1] + p[e:d - 1:-1] + p[b:c + 1] + p[f:]  # 3-opt
-    elif which == 7:
-        sol = p[:a + 1] + p[e:d - 1:-1] + p[c:b - 1:-1] + p[f:]  # 2-opt
+    sol = p[:a+1] + [p[c]] + [p[b]] + p[d:]
 
     return sol
 
 
-def calculateADJMatrix(nodes):
-    adjMatrix = []
-    for i in range(len(nodes)):
-        row = []
-        for j in range(len(nodes)):
-            dist = np.linalg.norm(nodes[i] - nodes[j])
-            row.append(dist)
-        adjMatrix.append(row)
-    return adjMatrix
-
-
-node_array = []
-
-with open('Berlin52.txt', newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter=' ')
-    for row in reader:
-        node_array.append([float(row[1]), float(row[2])])
-
-with open('population.txt', newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter=',')
-    for row in reader:
-        population = row
-
-
-def TwoOPT(fullData, adjMatrix, population, greedyPath, greedyCost ):
-
-    bestChange = 1
-    bestCost = greedyCost
+def TwoOPT(cityList, population, greedyPath, greedyGain, delta, refund):
+    bestChange = 1000000000
+    bestGain = greedyGain
     bestPath = greedyPath
-    while bestChange > 0:
-        saved, bestChange = _improve(0, bestPath, bestCost, adjMatrix, len(bestPath))
+    saved=0
 
-        if bestChange > 0:
-            a, c, e, which = saved
-            bestPath = exchange(bestPath, which, a, c, e)
-            bestCost -= bestChange
+    #To sort out this cycle. Everything else should work
+    while bestChange >= bestGain and saved is not None:
+        saved, bestChange = _improve(bestPath, bestGain, cityList, len(bestPath), population, delta, refund)
 
-        print(bestPath, bestCost)
-    return bestPath, bestCost
+        if bestChange > bestGain:
+            a, c = saved
+            bestPath = exchange(bestPath, a, c)
+            bestGain = bestChange
 
-
-
+        print(bestPath, bestGain)
+    return bestPath, bestGain

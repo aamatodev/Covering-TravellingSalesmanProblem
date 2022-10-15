@@ -45,7 +45,8 @@ def greedy(cityList, delta, population, refund, startNode=0):
     minimumPopulation = np.sum(population) * 0.3
 
     coveredNodeList[startNode] = 1
-    path.append(startNode)
+    #path.append(startNode)
+    path.append(cityList[startNode])
 
     # Mancava da sommare nell'income totale il refund ottenuto dalla popolazione del nodo iniziale
     totalIncome += population[startNode] * refund
@@ -105,7 +106,8 @@ def greedy(cityList, delta, population, refund, startNode=0):
         BKcoveredNodeList[nodeToAppend] = 1
         coveredNodes = BKcoveredNodeList.count(1)
         if startingHub != nodeToAppend:
-            path.append(nodeToAppend)
+            #path.append(nodeToAppend)
+            path.append(cityList[nodeToAppend])
             startingHub = nodeToAppend
         totalIncome += maxRefund
         BKvaccinatedPopulation += potentialVaccinatedPopulation
@@ -114,7 +116,8 @@ def greedy(cityList, delta, population, refund, startNode=0):
 
     print(totalIncome)
     print(BKcoveredNodeList)
-    path.append(startNode)
+    #path.append(startNode)
+    path.append(cityList[startNode])
     print(path)
     print(BKvaccinatedPopulation)
     print(minimumPopulation)
