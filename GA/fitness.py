@@ -35,11 +35,10 @@ class City:
 
 
 class Fitness:
-    def __init__(self, route, cities, delta, populations, refund):
+    def __init__(self, route, cities, delta, refund):
         self.delta = delta
         self.refund = refund
         self.cities = cities
-        self.populations = populations
         self.route = route
         self.revenue = 0
         self.cost = 0
@@ -85,7 +84,7 @@ def createRoute(cityList, population):
             selectedNode = random.randint(0, len(cityList)-1)
 
         alreadyVisited.append(cityList[selectedNode])
-        revenue, newCoveredCities, vaccinatedPopulation = cityList[selectedNode].CityRevenue(cityList, 100, coveredCities,
+        revenue, newCoveredCities, vaccinatedPopulation = cityList[selectedNode].CityRevenue(cityList, 300, coveredCities,
                                                                                           0, 5)
         coveredCities = newCoveredCities
         coverage += vaccinatedPopulation / totalPopulation
@@ -107,7 +106,7 @@ def initialPopulation(popSize, cityList, citiesPopulation):
 def rankRoutes(population, cityList, citiesPopulation):
     fitnessResults = {}
     for i in range(0, len(population)):
-        fitnessResults[i] = Fitness(population[i], cityList, 100, citiesPopulation, 5).routeFitness()
+        fitnessResults[i] = Fitness(population[i], cityList, 300, citiesPopulation, 5).routeFitness()
     list = sorted(fitnessResults.items(), key=operator.itemgetter(1), reverse=True)
     return list
 
@@ -241,7 +240,7 @@ population = np.array(population, dtype='float64')
 for i in range(len(fullData)):
     cityList.append(City(id=i, x=fullData[i][0], y=fullData[i][1], population=population[i]))
 
-path = [13, 25, 46, 51, 28, 36, 32, 42, 11, 6, 30, 40, 10, 50, 13]
+path = [50, 8, 25, 51, 13, 32, 7, 36, 30, 41, 37, 28, 50]
 route = []
 for i in path:
     route.append(City(id=i, x=fullData[i][0], y=fullData[i][1], population=population[i]))
@@ -252,4 +251,31 @@ for i in path:
 
 #print(createRoute(cityList, population))
 
-geneticAlgorithm(cities=cityList,population = population, popSize=30, eliteSize=20, mutationRate=0.20, generations=200)
+def RemoveUneddedNodes(bestRoute,cityList,population  ):
+    fitness = Fitness(route=bestRoute, cities=cityList, delta=300, refund=5)
+    bestRevenue = fitness.fullRouteRevenue()
+    bestComputedRoute = bestRoute
+    for idx, city in enumerate(bestRoute):
+        if idx != 0 and idx != len(bestRoute):
+            print(city.population)
+            bkPath = bestComputedRoute.copy()
+            bestComputedRoute.remove(city)
+            newPath = bestComputedRoute
+            fitness = Fitness(route=newPath, cities=cityList, delta=300, refund=5)
+            newRevenue = fitness.fullRouteRevenue()
+            if newRevenue > bestRevenue:
+                bestRevenue = newRevenue
+                bestComputedRoute = newPath
+            else:
+                bestComputedRoute = bkPath
+
+    print(bestComputedRoute)
+
+
+
+
+#bestRoute = geneticAlgorithm(cities=cityList,population = population, popSize=30, eliteSize=20, mutationRate=0.20, generations=200)
+
+path = [50, 8, 25, 51, 13, 32, 7, 36, 30, 41, 37, 28]
+
+print(RemoveUneddedNodes(route, cityList, population ))
