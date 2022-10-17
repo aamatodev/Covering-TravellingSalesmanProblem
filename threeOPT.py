@@ -5,15 +5,17 @@ import networkx as nx
 import numpy as np
 from matplotlib import pyplot as plt
 
+from fitness import Fitness
 
-def _improve(self, bestPath, pathCost, adjMatrix, size):
+
+def _improve(bestPath, bestCurrentRevenue, cities, size, delta, refund):
     """
     Breakable improvement loop, find an improving move and return to the
     main loop to execute it, selects whether we look for the first
     improving move or the best.
     """
     saved = None
-    bestChange = 1000000
+    bestChange = bestCurrentRevenue
 
     # Choose 3 unique edges defined by their first node
     for a in range(size - 5):
@@ -25,15 +27,17 @@ def _improve(self, bestPath, pathCost, adjMatrix, size):
                     # TODO improve this...
                     path = exchange(bestPath, i, a, c, e)
 
-                    change = calculatePathCost(path, adjMatrix)
+                    fitness = Fitness(path, cities, delta, refund)
 
-                    if change < bestChange:
+                    change = fitness.fullRouteRevenue()
+
+                    if change > bestChange:
                         saved = a, c, e, i
                         bestChange = change
 
     print(saved, bestChange)
 
-    return saved, pathCost - bestChange
+    return saved, bestChange - bestCurrentRevenue
 
 
 def calculatePathCost(path, adjMatrix):
@@ -82,45 +86,18 @@ def exchange(p, i, a, c, e, broad=False):
     return sol
 
 
-def calculateADJMatrix(nodes):
-    adjMatrix = []
-    for i in range(len(nodes)):
-        row = []
-        for j in range(len(nodes)):
-            dist = np.linalg.norm(nodes[i] - nodes[j])
-            row.append(dist)
-        adjMatrix.append(row)
-    return adjMatrix
-
-
-node_array = []
-
-with open('Berlin52.txt', newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter=' ')
-    for row in reader:
-        node_array.append([float(row[1]), float(row[2])])
-
-with open('population.txt', newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter=',')
-    for row in reader:
-        population = row
-
-
-def ThreeOPT(fullData, adjMatrix, population, greedyPath, greedyCost ):
-
+def ThreeOPT(cities, CurrentBestPath, BurrentBestRevenue, delta, refund):
     bestChange = 1
-    bestCost = greedyCost
-    bestPath = greedyPath
+    bestPath = CurrentBestPath
+    bestRevenue = BurrentBestRevenue
+
     while bestChange > 0:
-        saved, bestChange = _improve(0, bestPath, bestCost, adjMatrix, len(bestPath))
+        saved, bestChange = _improve( bestPath, bestRevenue, cities, len(bestPath), delta, refund)
 
         if bestChange > 0:
             a, c, e, which = saved
             bestPath = exchange(bestPath, which, a, c, e)
-            bestCost -= bestChange
+            bestRevenue += bestChange
 
-        print(bestPath, bestCost)
-    return bestPath, bestCost
-
-
-
+        print(bestPath, bestRevenue)
+    return bestPath, bestRevenue

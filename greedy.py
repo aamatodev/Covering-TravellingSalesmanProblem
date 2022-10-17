@@ -122,4 +122,4 @@ def greedy(cityList, delta, population, refund, startNode=0):
     print(BKvaccinatedPopulation)
     print(minimumPopulation)
     print("path cost - ", pathCost)
-    return path, pathCost
+    return path, totalIncome

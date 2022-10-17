@@ -46,7 +46,7 @@ def initialPopulation(popSize, cityList, citiesPopulation):
 def rankRoutes(population, cityList, citiesPopulation):
     fitnessResults = {}
     for i in range(0, len(population)):
-        fitnessResults[i] = Fitness(population[i], cityList, 300, citiesPopulation, 5).routeFitness()
+        fitnessResults[i] = Fitness(population[i], cityList, 300, 5).routeFitness()
     list = sorted(fitnessResults.items(), key=operator.itemgetter(1), reverse=True)
     return list
 
@@ -151,14 +151,34 @@ def geneticAlgorithm(cities, population, popSize, eliteSize, mutationRate, gener
     print("Final gain: " + str(rankRoutes(pop, cities, population)[0][1]))
     bestRouteIndex = rankRoutes(pop, cities, population)[0][0]
     bestRoute = pop[bestRouteIndex]
-    print(bestRoute)
-    return bestRoute
+
+    cleanedRoute, revenue = RemoveUneddedNodes(bestRoute,cities )
+
+    if cleanedRoute[0] != cleanedRoute[len(cleanedRoute)-1]:
+        cleanedRoute.append(cleanedRoute[0])
+    return cleanedRoute, revenue
+
+def RemoveUneddedNodes(bestRoute,cityList):
+    fitness = Fitness(route=bestRoute, cities=cityList, delta=300, refund=5)
+    bestRevenue = fitness.fullRouteRevenue()
+    bestComputedRoute = bestRoute
+    for idx, city in enumerate(bestRoute):
+        if idx != 0 and idx != len(bestRoute):
+            print(city.population)
+            bkPath = bestComputedRoute.copy()
+            bestComputedRoute.remove(city)
+            newPath = bestComputedRoute
+            fitness = Fitness(route=newPath, cities=cityList, delta=300, refund=5)
+            newRevenue = fitness.fullRouteRevenue()
+            if newRevenue > bestRevenue:
+                bestRevenue = newRevenue
+                bestComputedRoute = newPath
+            else:
+                bestComputedRoute = bkPath
+
+    return bestComputedRoute, bestRevenue
 
 
-# path = [13, 25, 46, 51, 28, 36, 32, 42, 11, 6, 30, 40, 10, 50, 13]
-# route = []
-# for i in path:
-#     route.append(City(id=i, x=fullData[i][0], y=fullData[i][1], population=population[i]))
 
 # fitness = Fitness(route=route, cities=cityList, delta=300, populations=population, refund=5)
 
@@ -167,6 +187,6 @@ def geneticAlgorithm(cities, population, popSize, eliteSize, mutationRate, gener
 # print(createRoute(cityList, population))
 
 
-cityList, population = openCity('Berlin52.txt', 'population.txt')
+#cityList, population = openCity('Berlin52.txt', 'population.txt')
 
-geneticAlgorithm(cities=cityList, population=population, popSize=30, eliteSize=20, mutationRate=0.01, generations=200)
+#print( geneticAlgorithm(cities=cityList, population=population, popSize=30, eliteSize=20, mutationRate=0.01, generations=200))

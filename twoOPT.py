@@ -13,11 +13,11 @@ def _improve(bestPath, bestGain, cityList, size, population, delta, refund):
 
     # Choose 2 unique edges defined by their first node
     for a in range(size - 3):
-        for c in range(a + 2, size):
+        for c in range(a + 2, size-1):
             path = exchange(bestPath, a, c)
 
             #change = calculatePathCost(path, adjMatrix)
-            change = Fitness(path, cityList, delta, population, refund).routeFitness()
+            change = Fitness(path, cityList, delta, refund).routeFitness()
 
             if change > bestGain:
                 saved = a, c
@@ -35,7 +35,7 @@ def exchange(p, a, c):
 
     b, d = a + 1, c + 1
 
-    sol = p[:a+1] + [p[c]] + [p[b]] + p[d:]
+    sol = p[:a+1] + p[c:b - 1:-1] + p[d:]
 
     return sol
 

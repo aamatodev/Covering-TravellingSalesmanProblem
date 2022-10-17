@@ -2,11 +2,10 @@ import numpy as np
 
 
 class Fitness:
-    def __init__(self, route, cities, delta, populations, refund):
+    def __init__(self, route, cities, delta, refund):
         self.delta = delta
         self.refund = refund
         self.cities = cities
-        self.populations = populations
         self.route = route
         self.revenue = 0
         self.cost = 0

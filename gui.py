@@ -5,9 +5,14 @@ import networkx as nx
 import numpy as np
 from random import randint
 
+from city import City
+from fitness import Fitness
+from genetic import geneticAlgorithm
 from greedy import greedy
 from threeOPT import ThreeOPT
 from twoOPT import TwoOPT
+
+from tkinter import ttk
 
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
@@ -21,7 +26,11 @@ LARGE_FONT = ("Verdana", 12)
 DELTA= 300
 REFUND=5
 
+
+
 class CoveringTravellingSalesmanProblem(tk.Tk):
+
+
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -51,7 +60,8 @@ class CoveringTravellingSalesmanProblem(tk.Tk):
 
 
 class GraphPage(tk.Frame):
-
+    GAPath = []
+    GARevenue = 0
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
@@ -109,25 +119,88 @@ class GraphPage(tk.Frame):
         self.drawGraph(fullData, [p.id for p in TwoOPTPath])
 
 
-    def threeOPTButton(self, fullData, adjMatrix, population, cityList):
+    def threeOPTButton(self, fullData, cityList, population):
         greedyPath, greedyCost = greedy(cityList, DELTA, population, REFUND)
 
-        ThreeOPTPath, ThreeOPTCost = ThreeOPT(fullData, adjMatrix, population, [p.id for p in greedyPath], greedyCost)
+        ThreeOPTPath, ThreeOPTCost = ThreeOPT(cityList, greedyPath, greedyCost, DELTA, REFUND)
 
-        self.drawGraph(fullData, ThreeOPTPath)
+        self.drawGraph(fullData, [p.id for p in ThreeOPTPath])
+
+    def GAButton(self, fullData, cityList, population):
+
+        # if not self.GAPath:
+        #     self.GAPath, self.GARevenue = geneticAlgorithm(cities=cityList, population=population, popSize=30, eliteSize=20,
+        #                                          mutationRate=0.01,
+        #                                          generations=200)
+        path = [13, 25, 46, 51, 28, 36, 32, 42, 11, 6, 30, 40, 10, 50, 13]
+        route = []
+        for i in path:
+            route.append(City(id=i, x=fullData[i][0], y=fullData[i][1], population=population[i]))
+
+        self.drawGraph(fullData, [p.id for p in route])
+    def GAtwoOPTButton(self, fullData, cityList, population):
+
+        # if not self.GAPath:
+        #     self.GAPath, self.GARevenue = geneticAlgorithm(cities=cityList, population=population, popSize=30, eliteSize=20,
+        #                                          mutationRate=0.01,
+        #                                          generations=200)
+        path = [13, 25, 46, 51, 28, 36, 32, 42, 11, 6, 30, 40, 10, 50, 13]
+        self.GAPath = []
+        for i in path:
+            self.GAPath.append(City(id=i, x=fullData[i][0], y=fullData[i][1], population=population[i]))
+
+        fitness = Fitness(route= self.GAPath, cities=cityList, delta=300, refund=5)
+
+        self.GARevenue = fitness.fullRouteRevenue()
+
+        TwoOPTPath, TwoOPTCost = TwoOPT(cityList,population, self.GAPath,self.GARevenue,DELTA,REFUND)
+
+        self.drawGraph(fullData, [p.id for p in TwoOPTPath])
+    def GAthreeOPTButton(self, fullData, cityList, population):
+
+        # if not self.GAPath:
+        #     self.GAPath, self.GARevenue = geneticAlgorithm(cities=cityList, population=population, popSize=30, eliteSize=20,
+        #                                          mutationRate=0.01,
+        #                                          generations=200)
+        path = [13, 25, 46, 51, 28, 36, 32, 42, 11, 6, 30, 40, 10, 50, 13]
+        self.GAPath = []
+        for i in path:
+            self.GAPath.append(City(id=i, x=fullData[i][0], y=fullData[i][1], population=population[i]))
+
+        fitness = Fitness(route=self.GAPath, cities=cityList, delta=300, refund=5)
+
+        self.GARevenue = fitness.fullRouteRevenue()
+
+        ThreeOPTPath, ThreeOPTCost = ThreeOPT(cityList, self.GAPath, self.GARevenue, DELTA, REFUND)
+
+        self.drawGraph(fullData, [p.id for p in ThreeOPTPath])
 
     def DisplayButtons(self, fullData, population, adjMatrix, cityList):
         greedy = tk.Button(self, text='Greedy', command=lambda: self.greedyButton(fullData, cityList, population))
         twoOpt = tk.Button(self, text='2-OPT', command=lambda: self.twoOPTButton(fullData, population,cityList))
-        threeOpt = tk.Button(self, text='3-OPT', command=lambda: self.threeOPTButton(fullData, adjMatrix, population, cityList))
+        threeOpt = tk.Button(self, text='3-OPT', command=lambda: self.threeOPTButton(fullData, cityList, population ))
+        GA = tk.Button(self, text='GA', command=lambda: self.GAButton(fullData, cityList, population ))
+        GA2OPT = tk.Button(self, text='GA + 2-OPT', command=lambda: self.GAtwoOPTButton(fullData, cityList, population ))
+        GA3OPT = tk.Button(self, text='GA + 3-OPT', command=lambda: self.GAthreeOPTButton(fullData, cityList, population ))
 
-        twoOpt.grid(row=0, column=1)
         greedy.grid(row=0, column=0)
+        twoOpt.grid(row=0, column=1)
         threeOpt.grid(row=0, column=2)
+
+        separator = ttk.Separator(self, orient='horizontal')
+        separator.grid(row=1, column=1, sticky="ew", ipadx=100)
+
+        GA.grid(row=2, column=0)
+        GA2OPT.grid(row=2, column=1)
+        GA3OPT.grid(row=2, column=2)
+
+        separator2 = ttk.Separator(self, orient='horizontal')
+        separator2.grid(row=3, column=1, sticky="ew", ipadx=100)
+
 
     def DisplaySlider(self):
         DeltaSlider = tk.Scale(self, from_=0, to=100, length=600, orient=tk.HORIZONTAL)
-        DeltaSlider.grid(row=1, column=1)
+        DeltaSlider.grid(row=4, column=1)
 
     def drawGraph(self, nodes, path):
 
@@ -150,11 +223,11 @@ class GraphPage(tk.Frame):
         canvas = FigureCanvasTkAgg(f, self)
         canvas.draw()
         # get canvas as tkinter's widget and `gird` in widget `window`
-        canvas.get_tk_widget().grid(row=2, column=1)
+        canvas.get_tk_widget().grid(row=5, column=1)
 
         # navigation toolbar
         toolbarFrame = tk.Frame(self)
-        toolbarFrame.grid(row=3, column=1)
+        toolbarFrame.grid(row=6, column=1)
         toolbar = NavigationToolbar2Tk(canvas, toolbarFrame)
 
     def calculateADJMatrix(self, nodes):
