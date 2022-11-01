@@ -29,7 +29,7 @@ def _improve(bestPath, bestCurrentRevenue, cities, size, delta, refund):
 
                     fitness = Fitness(path, cities, delta, refund)
 
-                    change = fitness.fullRouteRevenue()
+                    change, vaccinatedPopulation = fitness.fullRouteRevenue()
 
                     if change > bestChange:
                         saved = a, c, e, i

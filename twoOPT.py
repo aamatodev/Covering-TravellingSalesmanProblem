@@ -17,7 +17,7 @@ def _improve(bestPath, bestGain, cityList, size, population, delta, refund):
             path = exchange(bestPath, a, c)
 
             #change = calculatePathCost(path, adjMatrix)
-            change = Fitness(path, cityList, delta, refund).routeFitness()
+            change, vaccinatedPopulation = Fitness(path, cityList, delta, refund).routeFitness()
 
             if change > bestGain:
                 saved = a, c

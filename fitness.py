@@ -28,9 +28,9 @@ class Fitness:
             if idx > 0:
                 distance = consideredCity.distance(self.cities[self.route[idx - 1].id])
             totalRevenue += revenue - distance
-        return totalRevenue
+        return totalRevenue, vaccinatedPopulation
 
     def routeFitness(self):
         if self.fitness == 0:
-            self.fitness = float(self.fullRouteRevenue())
-        return self.fitness
+            self.fitness , vaccinatedPopulation = self.fullRouteRevenue()
+        return self.fitness,  vaccinatedPopulation

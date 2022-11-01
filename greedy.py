@@ -23,7 +23,7 @@ def calculateRefund(startPoint, hubPoint, population, coveredNodeList, coveredNo
     return coveredNodeList, coveredNodes, partialIncome, vaccinatedPopulation, cost
 
 
-def greedy(cityList, delta, population, refund, startNode=0):
+def greedy(cityList, delta, population, refund, size= INT_MAX, startNode=0):
     path = []
     totalIncome = 0
     coveredNodeList = [0] * len(cityList)
@@ -72,8 +72,9 @@ def greedy(cityList, delta, population, refund, startNode=0):
     potentialCheckedNodes = 1
 
     improvement = True
+    maxPathSize = 0
 
-    while potentialCheckedNodes < (len(cityList)) and improvement:
+    while potentialCheckedNodes < (len(cityList)) and improvement and maxPathSize < size :
         potentialVaccinatedPopulation = 0
         maxRefund = -100000
         for potentialHub in range(len(cityList)):
@@ -113,6 +114,7 @@ def greedy(cityList, delta, population, refund, startNode=0):
         BKvaccinatedPopulation += potentialVaccinatedPopulation
         potentialCheckedNodes += 1
         pathCost += partialCost
+        maxPathSize += 1
 
     print(totalIncome)
     print(BKcoveredNodeList)

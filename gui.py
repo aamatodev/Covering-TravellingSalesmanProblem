@@ -128,48 +128,36 @@ class GraphPage(tk.Frame):
 
     def GAButton(self, fullData, cityList, population):
 
-        # if not self.GAPath:
-        #     self.GAPath, self.GARevenue = geneticAlgorithm(cities=cityList, population=population, popSize=30, eliteSize=20,
-        #                                          mutationRate=0.01,
-        #                                          generations=200)
-        path = [13, 25, 46, 51, 28, 36, 32, 42, 11, 6, 30, 40, 10, 50, 13]
-        route = []
-        for i in path:
-            route.append(City(id=i, x=fullData[i][0], y=fullData[i][1], population=population[i]))
+        if not self.GAPath:
+            self.GAPath, self.GARevenue = geneticAlgorithm(cities=cityList, population=population, popSize=30, eliteSize=20,
+                                                 mutationRate=0.01,
+                                                 generations=200)
 
-        self.drawGraph(fullData, [p.id for p in route])
+        self.drawGraph(fullData, [p.id for p in self.GAPath])
     def GAtwoOPTButton(self, fullData, cityList, population):
 
-        # if not self.GAPath:
-        #     self.GAPath, self.GARevenue = geneticAlgorithm(cities=cityList, population=population, popSize=30, eliteSize=20,
-        #                                          mutationRate=0.01,
-        #                                          generations=200)
-        path = [13, 25, 46, 51, 28, 36, 32, 42, 11, 6, 30, 40, 10, 50, 13]
-        self.GAPath = []
-        for i in path:
-            self.GAPath.append(City(id=i, x=fullData[i][0], y=fullData[i][1], population=population[i]))
+        if not self.GAPath:
+            self.GAPath, self.GARevenue = geneticAlgorithm(cities=cityList, population=population, popSize=30, eliteSize=20,
+                                                 mutationRate=0.01,
+                                                 generations=200)
 
         fitness = Fitness(route= self.GAPath, cities=cityList, delta=300, refund=5)
 
-        self.GARevenue = fitness.fullRouteRevenue()
+        self.GARevenue, vaccinatedPopulation = fitness.fullRouteRevenue()
 
         TwoOPTPath, TwoOPTCost = TwoOPT(cityList,population, self.GAPath,self.GARevenue,DELTA,REFUND)
 
         self.drawGraph(fullData, [p.id for p in TwoOPTPath])
     def GAthreeOPTButton(self, fullData, cityList, population):
 
-        # if not self.GAPath:
-        #     self.GAPath, self.GARevenue = geneticAlgorithm(cities=cityList, population=population, popSize=30, eliteSize=20,
-        #                                          mutationRate=0.01,
-        #                                          generations=200)
-        path = [13, 25, 46, 51, 28, 36, 32, 42, 11, 6, 30, 40, 10, 50, 13]
-        self.GAPath = []
-        for i in path:
-            self.GAPath.append(City(id=i, x=fullData[i][0], y=fullData[i][1], population=population[i]))
+        if not self.GAPath:
+            self.GAPath, self.GARevenue = geneticAlgorithm(cities=cityList, population=population, popSize=30, eliteSize=20,
+                                                 mutationRate=0.01,
+                                                 generations=200)
 
         fitness = Fitness(route=self.GAPath, cities=cityList, delta=300, refund=5)
 
-        self.GARevenue = fitness.fullRouteRevenue()
+        self.GARevenue, vaccinatedPopulation = fitness.fullRouteRevenue()
 
         ThreeOPTPath, ThreeOPTCost = ThreeOPT(cityList, self.GAPath, self.GARevenue, DELTA, REFUND)
 

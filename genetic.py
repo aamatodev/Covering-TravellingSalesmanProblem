@@ -6,7 +6,9 @@ import pandas as pd
 import random
 from city import City
 from fitness import Fitness
+from greedy import greedy
 from opencity import openCity
+from twoOPT import TwoOPT
 
 
 def createRoute(cityList, population):
@@ -25,7 +27,8 @@ def createRoute(cityList, population):
             selectedNode = random.randint(0, len(cityList) - 1)
 
         alreadyVisited.append(cityList[selectedNode])
-        revenue, newCoveredCities, vaccinatedPopulation = cityList[selectedNode].CityRevenue(cityList, 300, coveredCities, 0, 5)
+        revenue, newCoveredCities, vaccinatedPopulation = cityList[selectedNode].CityRevenue(cityList, 300,
+                                                                                             coveredCities, 0, 5)
         coveredCities = newCoveredCities
         coverage += vaccinatedPopulation / totalPopulation
         route.append(cityList[selectedNode])
@@ -46,7 +49,7 @@ def initialPopulation(popSize, cityList, citiesPopulation):
 def rankRoutes(population, cityList, citiesPopulation):
     fitnessResults = {}
     for i in range(0, len(population)):
-        fitnessResults[i] = Fitness(population[i], cityList, 300, 5).routeFitness()
+        fitnessResults[i], vaccinatedPopulation = Fitness(population[i], cityList, 300, 5).routeFitness()
     list = sorted(fitnessResults.items(), key=operator.itemgetter(1), reverse=True)
     return list
 
@@ -152,15 +155,28 @@ def geneticAlgorithm(cities, population, popSize, eliteSize, mutationRate, gener
     bestRouteIndex = rankRoutes(pop, cities, population)[0][0]
     bestRoute = pop[bestRouteIndex]
 
-    cleanedRoute, revenue = RemoveUneddedNodes(bestRoute,cities )
+    TwoOPTPath, TwoOPTCost = TwoOPT(cities, population, bestRoute, rankRoutes(pop, cities, population)[0][1], 300, 5)
 
-    if cleanedRoute[0] != cleanedRoute[len(cleanedRoute)-1]:
+    cleanedRoute, revenue = RemoveUneddedNodes(TwoOPTPath, cities, population)
+
+    print("Final gain: " + revenue)
+
+    if cleanedRoute[0] != cleanedRoute[len(cleanedRoute) - 1]:
         cleanedRoute.append(cleanedRoute[0])
     return cleanedRoute, revenue
 
-def RemoveUneddedNodes(bestRoute,cityList):
+
+def populationCoveredByPath(path):
+    pupulation = 0
+    for city in path:
+        pupulation = pupulation + city.population
+    return pupulation
+
+
+def RemoveUneddedNodes(bestRoute, cityList, population):
+    minimumPopulation = np.sum(population) * 0.3
     fitness = Fitness(route=bestRoute, cities=cityList, delta=300, refund=5)
-    bestRevenue = fitness.fullRouteRevenue()
+    bestRevenue, vaccinatedPopulation  = fitness.fullRouteRevenue()
     bestComputedRoute = bestRoute
     for idx, city in enumerate(bestRoute):
         if idx != 0 and idx != len(bestRoute):
@@ -169,16 +185,24 @@ def RemoveUneddedNodes(bestRoute,cityList):
             bestComputedRoute.remove(city)
             newPath = bestComputedRoute
             fitness = Fitness(route=newPath, cities=cityList, delta=300, refund=5)
-            newRevenue = fitness.fullRouteRevenue()
+            newRevenue, vaccinatedPopulation = fitness.fullRouteRevenue()
             if newRevenue > bestRevenue:
                 bestRevenue = newRevenue
                 bestComputedRoute = newPath
             else:
                 bestComputedRoute = bkPath
 
+    fitness, vaccinatedPopulation = Fitness(route=bestComputedRoute, cities=cityList, delta=300, refund=5).fullRouteRevenue()
+
+    while vaccinatedPopulation < minimumPopulation:
+        citiesNotAlreadyInPath = list(set(cityList) - set(bestComputedRoute))
+        path, cost = greedy(citiesNotAlreadyInPath, 300, population, 5, 1,
+                            bestComputedRoute[len(bestComputedRoute) - 1].id)
+        path = path[1:-1]
+        bestComputedRoute = bestComputedRoute + path
+        fitness, vaccinatedPopulation = Fitness(route=bestComputedRoute, cities=cityList, delta=300, refund=5).fullRouteRevenue()
+
     return bestComputedRoute, bestRevenue
-
-
 
 # fitness = Fitness(route=route, cities=cityList, delta=300, populations=population, refund=5)
 
@@ -187,6 +211,6 @@ def RemoveUneddedNodes(bestRoute,cityList):
 # print(createRoute(cityList, population))
 
 
-#cityList, population = openCity('Berlin52.txt', 'population.txt')
+# cityList, population = openCity('Berlin52.txt', 'population.txt')
 
-#print( geneticAlgorithm(cities=cityList, population=population, popSize=30, eliteSize=20, mutationRate=0.01, generations=200))
+# print( geneticAlgorithm(cities=cityList, population=population, popSize=30, eliteSize=20, mutationRate=0.01, generations=200))
