@@ -81,15 +81,15 @@ def exchange(p, i, a, c, e, broad=False):
     elif which == 6:
         sol = p[:a + 1] + p[e:d - 1:-1] + p[b:c + 1] + p[f:]  # 3-opt
     elif which == 7:
-        sol = p[:a + 1] + p[e:d - 1:-1] + p[c:b - 1:-1] + p[f:]  # 2-opt
+        sol = p[:a + 1] + p[e:d - 1:-1] + p[c:b - 1:-1] + p[f:]  # 3-opt
 
     return sol
 
 
-def ThreeOPT(cities, CurrentBestPath, BurrentBestRevenue, delta, refund):
+def ThreeOPT(cities, CurrentBestPath, CurrentBestRevenue, delta, refund):
     bestChange = 1
     bestPath = CurrentBestPath
-    bestRevenue = BurrentBestRevenue
+    bestRevenue = CurrentBestRevenue
 
     while bestChange > 0:
         saved, bestChange = _improve( bestPath, bestRevenue, cities, len(bestPath), delta, refund)

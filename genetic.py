@@ -4,6 +4,9 @@ import numpy as np
 import operator
 import pandas as pd
 import random
+
+from matplotlib import pyplot as plt
+
 from city import City
 from fitness import Fitness
 from greedy import greedy
@@ -147,19 +150,31 @@ def nextGeneration(currentGen, eliteSize, mutationRate, cityList, citiesPopulati
 def geneticAlgorithm(cities, population, popSize, eliteSize, mutationRate, generations):
     pop = initialPopulation(popSize, cities, population)
     print("Initial gain: " + str(rankRoutes(pop, cities, population)[0][1]))
+    progress = []
+    progress.append(rankRoutes(pop, cities, population)[0][1])
 
     for i in range(0, generations):
         pop = nextGeneration(pop, eliteSize, mutationRate, cities, population)
+        progress.append(rankRoutes(pop, cities, population)[0][1])
+
+    # plt.clf()
+    # plt.plot(progress)
+    # plt.ylabel('Distance')
+    # plt.xlabel('Generation')
+    # plt.show()
+    # plt.clf()
 
     print("Final gain: " + str(rankRoutes(pop, cities, population)[0][1]))
     bestRouteIndex = rankRoutes(pop, cities, population)[0][0]
     bestRoute = pop[bestRouteIndex]
 
-    TwoOPTPath, TwoOPTCost = TwoOPT(cities, population, bestRoute, rankRoutes(pop, cities, population)[0][1], 300, 5)
+    TwoOPTPath, TwoOPTRevenue = TwoOPT(cities, population, bestRoute, rankRoutes(pop, cities, population)[0][1], 300, 5)
+
+    print("Final gain after 2 OPT: " + str(TwoOPTRevenue))
 
     cleanedRoute, revenue = RemoveUneddedNodes(TwoOPTPath, cities, population)
 
-    print("Final gain: " + revenue)
+    print("Final gain after LS: " + str(revenue))
 
     if cleanedRoute[0] != cleanedRoute[len(cleanedRoute) - 1]:
         cleanedRoute.append(cleanedRoute[0])

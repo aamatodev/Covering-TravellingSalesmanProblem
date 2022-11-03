@@ -3,7 +3,8 @@ from random import randint
 from city import City
 from opencity import openCity
 
-INT_MAX = -2147483647
+INT_MIN = -2147483647
+INT_MAX = 2147483647
 
 
 def calculateRefund(startPoint, hubPoint, population, coveredNodeList, coveredNodes, cityList, delta, refund):
