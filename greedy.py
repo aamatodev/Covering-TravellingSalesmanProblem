@@ -117,12 +117,12 @@ def greedy(cityList, delta, population, refund, size= INT_MAX, startNode=0):
         pathCost += partialCost
         maxPathSize += 1
 
-    print(totalIncome)
-    print(BKcoveredNodeList)
+    print("Covered nodes: ",BKcoveredNodeList)
     #path.append(startNode)
     path.append(cityList[startNode])
-    print(path)
-    print(BKvaccinatedPopulation)
-    print(minimumPopulation)
-    print("path cost - ", pathCost)
+    print("Path: ", path)
+    print("Minimum people to be vaccinated: ", minimumPopulation)
+    print("Vaccinated people: ", BKvaccinatedPopulation)
+    print("Path cost: ", pathCost)
+    print("Total gain: ", totalIncome)
     return path, totalIncome
