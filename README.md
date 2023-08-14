@@ -36,3 +36,5 @@ After Python is installed, you can clone the repository and move to its folder, 
 
 From there, type `python gui.py`. After that, the Graphical Interface will appear, like here:
 
+<img width="382" alt="CSP_first" src="https://github.com/alesordo/Covering-Salesman-Problem/assets/85616887/3e345ef9-0351-4d78-aa39-0208e717feea">
+
