@@ -35,7 +35,7 @@ def _improve(bestPath, bestCurrentRevenue, cities, size, delta, refund):
                         saved = a, c, e, i
                         bestChange = change
 
-    print(saved, bestChange)
+    print(saved, 'Improved total gain: ', bestChange)
 
     return saved, bestChange - bestCurrentRevenue
 
@@ -99,5 +99,6 @@ def ThreeOPT(cities, CurrentBestPath, CurrentBestRevenue, delta, refund):
             bestPath = exchange(bestPath, which, a, c, e)
             bestRevenue += bestChange
 
-        print(bestPath, bestRevenue)
+    print('Best Path: ', bestPath)
+    print('Best Total Gain: ', bestRevenue)
     return bestPath, bestRevenue
