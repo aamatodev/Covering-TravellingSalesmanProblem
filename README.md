@@ -19,7 +19,7 @@ The **rules** are:
 
 ## Data, assumptions and defaults
 
-The data used are from [berlin52](https://github.com/pdrozdowski/TSPLib.Net/blob/5cb1449963fa56176c062ff806eb831dcbc07c54/TSPLIB95/tsp/berlin52.tsp), adapted to CSP by generating a casual population tuple, save on the `population.txt` file.
+The data used are from [berlin52](https://github.com/pdrozdowski/TSPLib.Net/blob/5cb1449963fa56176c062ff806eb831dcbc07c54/TSPLIB95/tsp/berlin52.tsp), adapted to CSP by generating a casual population tuple, saved on the `population.txt` file.
 
 We assumed that:
 * Villages connections are represented by a [complete graph](https://en.wikipedia.org/wiki/Complete_graph) G=(N,A);
@@ -34,7 +34,20 @@ The whole program is written in Python, so make sure to have it installed on you
 
 After Python is installed, you can clone the repository and move to its folder, by opening a Terminal and typing `cd path-to-repository`. Remember that `path-to-repository` must be your own path to the repository.
 
-From there, type `python gui.py`. After that, the Graphical Interface will appear, like here:
+From there, type `python gui.py` and press Enter. After that, the Graphical Interface (GUI) will appear, like here:
 
 <img width="382" alt="CSP_first" src="https://github.com/alesordo/Covering-Salesman-Problem/assets/85616887/3e345ef9-0351-4d78-aa39-0208e717feea">
 
+If some libraries are missing install them using `pip install name-of-the-library`.
+
+From the GUI, choose one of the possible solvers by pressing the top buttons and watch the results. On the GUI you'll see the path, while on the terminal total gain (profit) and other useful information. A detailed explanation of the solution is provided below.
+
+## Solution explanation
+
+Various Operations Research techniques can be used to solve the problem, here are the ones you can run on our program.
+
+### Greedy
+
+A [Greedy](https://en.wikipedia.org/wiki/Greedy_algorithm) solution is often a good starting point in optimization problems. The algorithm you run by pressing `Greedy` is very similar to a "Nearest Neighbour". In fact, starting from the initial node, it looks for every adjacent node (since the graph is complete, every node is adjacent) and chooses the one not yet covered that can give the maximum gain.
+
+This solution is obviously not optimal and the last chosen nodes of the CSP are isolated and very distant from the others. This is very common in Greedy Algorithms, as the initial choices are locally optimal, but the last ones are low quality.
