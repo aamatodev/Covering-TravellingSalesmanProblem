@@ -48,6 +48,24 @@ Various Operations Research techniques can be used to solve the problem, here ar
 
 ### Greedy
 
-A [Greedy](https://en.wikipedia.org/wiki/Greedy_algorithm) solution is often a good starting point in optimization problems. The algorithm you run by pressing `Greedy` is very similar to a "Nearest Neighbour". In fact, starting from the initial node, it looks for every adjacent node (since the graph is complete, every node is adjacent) and chooses the one not yet covered that can give the maximum gain.
+A [Greedy](https://en.wikipedia.org/wiki/Greedy_algorithm) solution is often a good starting point in optimization problems. The algorithm you run by pressing `Greedy` is very similar to a ["Nearest Neighbor"](https://en.wikipedia.org/wiki/Nearest_neighbor_search). In fact, starting from the initial node, it looks for every adjacent node (since the graph is complete all the nodes are adjacent) and chooses the one not yet covered that can give the maximum gain.
 
-This solution is obviously not optimal and the last chosen nodes of the CSP are isolated and very distant from the others. This is very common in Greedy Algorithms, as the initial choices are locally optimal, but the last ones are low quality.
+This solution is obviously not optimal and the last chosen nodes of the CSP are isolated and distant from the others. This is very common in Greedy Algorithms, as the initial choices are locally optimal, but the last ones are low quality.
+
+### 2-opt
+
+A more optimized solution than the Greedy one can be achieved by applying local search algorithms, such as 2-opt. 2-opt consists in removing two non-adjacent arcs from the Greedy CSP solution (which is a cycle) and reconnecting the nodes while maintaining the cycle, so with crossing arcs.
+
+The application of Greedy + 2-opt can be tested by pressing `2-OPT` and gives a slightly better solution than just Greedy. The time complexity of the solution is $O(n*m^3)$, where $n$ is the total number of villages and $m$ the number of villages in the Greedy solution.
+
+### 3-opt
+
+As the name suggests, it's another local search algorithm. The principle is similar to the 2-opt, but in this case three non-adjacent arcs are removed. The possible combinations to reconnect the nodes while keeping the cycle are 7:
+
+![image](https://github.com/alesordo/Covering-Salesman-Problem/assets/85616887/6f7c3385-40eb-434c-bd2e-d279c1711ce7)
+
+To test the results just press `3-OPT` on the GUI. This and the next solution could take much more time. In fact, the time complexity of this solution is $O(m*n^4)$, where $n$ is the total number of villages and $m$ the number of villages in the initial CSP.
+
+### Genetic algorithm
+
+
