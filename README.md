@@ -40,23 +40,23 @@ From there, type `python gui.py` and press Enter. After that, the Graphical Inte
 
 If some libraries are missing install them using `pip install name-of-the-library`.
 
-From the GUI, choose one of the possible solvers by pressing the top buttons and watch the results. On the GUI you'll see the path, while on the terminal total gain (profit) and other useful information. A detailed explanation of the solution is provided below.
+From the GUI, choose one of the possible solvers by pressing the top buttons and watch the results. On the GUI you'll see the path, while on the terminal the total gain (profit) and other useful information. A detailed explanation of the solutions is provided below.
 
-## Solution explanation
+## Solutions explanation
 
 Various Operations Research techniques can be used to solve the problem, here are the ones you can run on our program.
 
 ### Greedy
 
-A [Greedy](https://en.wikipedia.org/wiki/Greedy_algorithm) solution is often a good starting point in optimization problems. The algorithm you run by pressing `Greedy` is very similar to a ["Nearest Neighbor"](https://en.wikipedia.org/wiki/Nearest_neighbor_search). In fact, starting from the initial node, it looks for every adjacent node (since the graph is complete all the nodes are adjacent) and chooses the one not yet covered that can give the maximum gain.
+A [Greedy Algorithm](https://en.wikipedia.org/wiki/Greedy_algorithm) is often a good starting point in optimization problems. The algorithm you run by pressing `Greedy` is very similar to a ["Nearest Neighbor"](https://en.wikipedia.org/wiki/Nearest_neighbor_search). In fact, starting from the initial node, it looks for every adjacent node (since the graph is complete all the nodes are adjacent) and chooses the one not yet covered that can give the maximum gain.
 
-This solution is obviously not optimal and the last chosen nodes of the CSP are isolated and distant from the others. This is very common in Greedy Algorithms, as the initial choices are locally optimal, but the last ones are low quality.
+The solution returned is obviously not optimal and the last chosen nodes of the CSP are isolated and distant from the others. This is very common in Greedy Algorithms, as the initial choices are locally optimal, but the last ones are low quality.
 
 ### 2-opt
 
 A more optimized solution than the Greedy one can be achieved by applying local search algorithms, such as 2-opt. 2-opt consists in removing two non-adjacent arcs from the Greedy CSP solution (which is a cycle) and reconnecting the nodes while maintaining the cycle, so with crossing arcs.
 
-The application of Greedy + 2-opt can be tested by pressing `2-OPT` and gives a slightly better solution than just Greedy. The time complexity of the solution is $O(n*m^3)$, where $n$ is the total number of villages and $m$ the number of villages in the Greedy solution.
+The application of Greedy + 2-opt can be tested by pressing `2-OPT` and gives a slightly better result than just Greedy. The time complexity of the solution is $O(n*m^3)$, where $n$ is the total number of villages and $m$ the number of villages in the initial CSP.
 
 ### 3-opt
 
@@ -64,8 +64,31 @@ As the name suggests, it's another local search algorithm. The principle is simi
 
 ![image](https://github.com/alesordo/Covering-Salesman-Problem/assets/85616887/6f7c3385-40eb-434c-bd2e-d279c1711ce7)
 
-To test the results just press `3-OPT` on the GUI. This and the next solution could take much more time. In fact, the time complexity of this solution is $O(m*n^4)$, where $n$ is the total number of villages and $m$ the number of villages in the initial CSP.
+To test the results just press `3-OPT` on the GUI. This and the next solution could take much more time than Greedy or 2-opt. In fact, the time complexity of this solution is $O(m*n^4)$, where $n$ is the total number of villages and $m$ the number of villages in the initial CSP.
 
 ### Genetic algorithm
 
+A different approach that starts from generating random solutions with some requirements and applies the principles of natural selection. It's a metaheuristic that belongs to the class of Evolutionary Algorithms.
 
+#### Parameters
+
+Our Genetic Algorithms parameters are:
+- Initial population (initial number of solutions) = 30;
+- Elite size = 20;
+- Mutation rate = 10%;
+- Number of generations = 200.
+
+#### Steps
+
+1. Generate initial population;
+2. Population ranking;
+3. Mating pool selection;
+4. Crossover;
+5. Mutations;
+6. Local Search to remove unnecessary nodes and adding nodes if covered population is < 30%.
+
+##### 1. Initial population generation
+
+To create a population of solutions that follows the initial rules we choose a random percentage between 30% and 99%, in order to vaccinate at least 30% of all the people. The nodes that are part of the solution are also chosen randomly, until the random percentage of vaccinated people is met.
+
+**Note**: every node is chosen just once and we excluded 100% of people, because in that case every node would be included in the CSP.
