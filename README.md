@@ -80,7 +80,7 @@ Our Genetic Algorithms parameters are:
 
 #### Steps
 
-1. Generate initial population;
+1. Initial population generation;
 2. Population ranking;
 3. Mating pool selection;
 4. Crossover;
@@ -91,4 +91,28 @@ Our Genetic Algorithms parameters are:
 
 To create a population of solutions that follows the initial rules we choose a random percentage between 30% and 99%, in order to vaccinate at least 30% of all the people. The nodes that are part of the solution are also chosen randomly, until the random percentage of vaccinated people is met.
 
-**Note**: every node is chosen just once and we excluded 100% of people, because in that case every node would be included in the CSP.
+**Note**: every node is chosen just once and we excluded 100% of people, because in that case all the nodes would be included in the CSP.
+
+##### 2. Population ranking
+
+The fitness function simply determines the net gain after costs. Solutions are ranked in decreasing order, from best to worst fit.
+
+##### 3. Mating pool selection
+
+Mating pooling means choosing the parents to create next generations. To choose the parents we used **fitness proportionate selection** or "roulette wheel selection", which you can visualize below.
+
+![image](https://github.com/alesordo/Covering-Salesman-Problem/assets/85616887/cf3a1e7b-4e02-4797-ab8a-30467b81631f)
+
+Also, **elitism** was applied, meaning that the best elements from the previous generation are always kept to create the next one. The number of elements chosen depends on the Elite size, [20 in this case](#parameters).
+
+##### 4. Crossover
+
+Crossover is the actual creation of new solutions from the ones chosen in the previous step. A standard crossover can't be used, as in any CSP a node can appear just once. So we do the following **Ordered crossover**:
+
+1. Select a random length sub-string from the first parent;
+2. Add all the elements of the second parent that aren't present yet.
+
+##### 5. Mutations
+
+In our case mutations are seen as random swapping between cities in the CSP solution. Since the visiting order is crucial for the fitness function, swapping nodes can randomly improve a CSP.
+
