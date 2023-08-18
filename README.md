@@ -1,15 +1,15 @@
 # Covering Salesman Problem (CSP) Solver
 
-Python project to determine, with Operations Research techniques, the best solution of a Covering Salesman Problem (CSP). CSPs are a generalization of the Traveling Salesman Problem, known also as [set TSP](https://en.wikipedia.org/wiki/Set_TSP_problem). They consist in finding the shortest tour in a graph in order to visit all specific subsets of the graph.
+Python project to determine, with Operations Research techniques, the best solution for a Covering Salesman Problem (CSP), aka [set TSP](https://en.wikipedia.org/wiki/Set_TSP_problem). CSPs are a generalization of the Traveling Salesman Problem and consist in finding the shortest tour in a graph in order to visit all specific subsets of the graph.
 
 ## Initial problem
 
-The specific problem targeted by this program is the following: an NGO has to plan vaccinations in a rural area :syringe:. People are willing to move to nearby villages within a certain number of kilometers ($Delta$) to get vaccines at specific hubs.
+The specific problem targeted by this program is the following: an NGO has to plan vaccinations in a rural area 🏚️:syringe:. People are willing to move to nearby villages within a certain number of kilometers ($Delta$) to get vaccines at specific hubs.
 
 The **rules** are:
 - Everybody must get vaccinated on site;
-- Nobody can be vaccinated over the Delta distance;
-- If there's distance ($d$) between village and hub, the vaccinated people are, in percentage, d/Delta;
+- Nobody can be vaccinated over the $Delta$ distance;
+- If there's distance ($d$) between village and hub, the vaccinated people are, in percentage, $d/Delta$;
 - Villages population and villages distances are known;
 - The NGO receives a refund ($r$) for each vaccination;
 - The NGO pays a cost ($c$) for each kilometer;
@@ -40,7 +40,7 @@ From there, type `python gui.py` and press Enter. After that, the Graphical Inte
 
 If some libraries are missing install them using `pip install name-of-the-library`.
 
-From the GUI, choose one of the possible solvers by pressing the top buttons and watch the results. On the GUI you'll see the path, while on the terminal the total gain (profit) and other useful information. A detailed explanation of the solutions is provided below.
+From the GUI, choose one of the possible solvers by clicking the top buttons and watch the results. On the GUI you'll see the path, while on the terminal the total gain (profit) and other useful information. A detailed explanation of the solutions is provided below.
 
 ## Solutions explanation
 
@@ -56,7 +56,7 @@ The solution returned is obviously not optimal and the last chosen nodes of the 
 
 A more optimized solution than the Greedy one can be achieved by applying local search algorithms, such as 2-opt. 2-opt consists in removing two non-adjacent arcs from the Greedy CSP solution (which is a cycle) and reconnecting the nodes while maintaining the cycle, so with crossing arcs.
 
-The application of Greedy + 2-opt can be tested by pressing `2-OPT` and gives a slightly better result than just Greedy. The time complexity of the solution is $O(n*m^3)$, where $n$ is the total number of villages and $m$ the number of villages in the initial CSP.
+The application of Greedy + 2-opt can be run by clicking `2-OPT` and gives a slightly better result than just Greedy. The time complexity of the solution is $O(n*m^3)$, where $n$ is the total number of villages and $m$ the number of villages in the initial CSP.
 
 ### 3-opt
 
@@ -64,15 +64,14 @@ As the name suggests, it's another local search algorithm. The principle is simi
 
 ![3-opt explanation](https://github.com/alesordo/Covering-Salesman-Problem/assets/85616887/6f7c3385-40eb-434c-bd2e-d279c1711ce7)
 
-To test the results just press `3-OPT` on the GUI. This and the next solution could take much more time than Greedy or 2-opt. In fact, the time complexity of this solution is $O(m*n^4)$, where $n$ is the total number of villages and $m$ the number of villages in the initial CSP.
+To see this algorithm at work just click `3-OPT` on the GUI. This and the next solution could take much more time than Greedy or 2-opt. In fact, the time complexity of this solution is $O(m*n^4)$, where $n$ is the total number of villages and $m$ the number of villages in the initial CSP.
 
 ### Genetic algorithm (GA)
 
-A different approach that starts from generating random solutions with some requirements and applies the principles of natural selection. It's a metaheuristic that belongs to the class of Evolutionary Algorithms. To test the results press `GA` on the GUI. **Be careful**, it could take long and could also lead to a crash of your machine.
+A different approach that starts from generating random solutions with some requirements and applies the principles of natural selection. It's a metaheuristic that belongs to the class of Evolutionary Algorithms. To test the algorithm click `GA` on the GUI. **Be careful**, it could take long and also freeze your machine.
 
 #### Parameters
 
-Our Genetic Algorithms parameters are:
 - Initial population (initial number of solutions) = 30;
 - Elite size = 20;
 - Mutation rate = 0.01;
@@ -136,7 +135,7 @@ The LS has three steps:
 
 ### GA with 2-opt or 3-opt
 
-They can be called by pressing on `GA + 2-OPT` or `GA + 3-OPT`. These two approaches have already been explained individually. Their merging could lead to further improvements on the results, but we didn't track its performances due to a lack of time.
+They can be called by clicking `GA + 2-OPT` or `GA + 3-OPT`. These two approaches have already been explained individually. Their merging could lead to further improvements on the results, but we didn't track their performances due to a lack of time.
 
 ## Results
 
@@ -144,7 +143,7 @@ The profit varies as follows with the different approaches:
 
 ![results](https://github.com/alesordo/Covering-Salesman-Problem/assets/85616887/c89f76fb-8f8f-4873-84c3-a7494c788f01)
 
-The GA gave the best results. Note that the best result is achieved by applying LS and 2-opt after each step. While this is not on the code, you can do it by simply editing the code.
+The GA gave the best results. Note that the best result overall was achieved by applying LS and 2-opt after each step. While this is not on the code, you can test it with a simple edit.
 
 ## Improvements
 
@@ -155,4 +154,4 @@ Some of the improvements to develop are:
 
 ## Credits
 
-This project was realized by Alessandro Amato (@aleama98) and Alessio Sordo (@alesordo), both from the University of Ferrara (Italy) 😃
+This project was developed by Alessandro Amato (@aleama98) and Alessio Sordo (@alesordo), both students from the University of Ferrara (Italy) 💻
