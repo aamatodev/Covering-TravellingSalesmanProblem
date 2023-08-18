@@ -4,29 +4,29 @@ Python project to determine, with Operations Research techniques, the best solut
 
 ## Initial problem
 
-The specific problem targeted by this program is the following: an NGO has to plan vaccinations in a rural area :syringe:. People are willing to move to nearby villages within a certain number of kilometers (Delta) to get vaccines at specific hubs.
+The specific problem targeted by this program is the following: an NGO has to plan vaccinations in a rural area :syringe:. People are willing to move to nearby villages within a certain number of kilometers ($Delta$) to get vaccines at specific hubs.
 
 The **rules** are:
 - Everybody must get vaccinated on site;
 - Nobody can be vaccinated over the Delta distance;
-- If there's distance (d) between village and hub, the vaccinated people are, in percentage, d/Delta;
+- If there's distance ($d$) between village and hub, the vaccinated people are, in percentage, d/Delta;
 - Villages population and villages distances are known;
-- The NGO receives a refund (r) for each vaccination;
-- The NGO pays a cost (c) for each kilometer;
+- The NGO receives a refund ($r$) for each vaccination;
+- The NGO pays a cost ($c$) for each kilometer;
 - The NGO must vaccinate at least 30% of all the people.
 
 **Objective**: find a path (closed loop) to get maximum profit. Refund and Cost must be set so that visiting all the villages is not the optimum.
 
-## Data, assumptions and defaults
+## Dataset, assumptions and defaults
 
 The data used are from [berlin52](https://github.com/pdrozdowski/TSPLib.Net/blob/5cb1449963fa56176c062ff806eb831dcbc07c54/TSPLIB95/tsp/berlin52.tsp), adapted to CSP by generating a casual population tuple, saved on the `population.txt` file.
 
 We assumed that:
 * Villages connections are represented by a [complete graph](https://en.wikipedia.org/wiki/Complete_graph) G=(N,A);
 * Distances between villages are [euclidean](https://en.wikipedia.org/wiki/Euclidean_distance);
-* Every village can be covered just once by itself or another village. *NOTE*: this way the result strongly depends on the order in which villages are visited. This is a wrong interpretation of the problem, used to simplify it. Consider to correct this problem;
+* Every village can be covered just once by itself or another village. *NOTE*: this way the result strongly depends on the order in which villages are visited. This is a wrong interpretation of the problem, used to simplify it. Consider to correct this issue.
 
-The default values are: c=1 unit/Km, r=5 unit/person, Delta=300 Km
+The default values are: $c$=1 unit/Km, $r$=5 unit/person, $Delta$=300 Km
 
 ## Usage
 
@@ -62,21 +62,23 @@ The application of Greedy + 2-opt can be tested by pressing `2-OPT` and gives a 
 
 As the name suggests, it's another local search algorithm. The principle is similar to the 2-opt, but in this case three non-adjacent arcs are removed. The possible combinations to reconnect the nodes while keeping the cycle are 7:
 
-![image](https://github.com/alesordo/Covering-Salesman-Problem/assets/85616887/6f7c3385-40eb-434c-bd2e-d279c1711ce7)
+![3-opt explanation](https://github.com/alesordo/Covering-Salesman-Problem/assets/85616887/6f7c3385-40eb-434c-bd2e-d279c1711ce7)
 
 To test the results just press `3-OPT` on the GUI. This and the next solution could take much more time than Greedy or 2-opt. In fact, the time complexity of this solution is $O(m*n^4)$, where $n$ is the total number of villages and $m$ the number of villages in the initial CSP.
 
-### Genetic algorithm
+### Genetic algorithm (GA)
 
-A different approach that starts from generating random solutions with some requirements and applies the principles of natural selection. It's a metaheuristic that belongs to the class of Evolutionary Algorithms.
+A different approach that starts from generating random solutions with some requirements and applies the principles of natural selection. It's a metaheuristic that belongs to the class of Evolutionary Algorithms. To test the results press `GA` on the GUI. **Be careful**, it could take long and could also lead to a crash of your machine.
 
 #### Parameters
 
 Our Genetic Algorithms parameters are:
 - Initial population (initial number of solutions) = 30;
 - Elite size = 20;
-- Mutation rate = 10%;
+- Mutation rate = 0.01;
 - Number of generations = 200.
+
+The default parameters can be changed by editing them in the `gui.py` file. Look for `geneticAlgorithm()`.
 
 #### Steps
 
@@ -101,7 +103,7 @@ The fitness function simply determines the net gain after costs. Solutions are r
 
 Mating pooling means choosing the parents to create next generations. To choose the parents we used **fitness proportionate selection** or "roulette wheel selection", which you can visualize below.
 
-![image](https://github.com/alesordo/Covering-Salesman-Problem/assets/85616887/cf3a1e7b-4e02-4797-ab8a-30467b81631f)
+![roulette](https://github.com/alesordo/Covering-Salesman-Problem/assets/85616887/cf3a1e7b-4e02-4797-ab8a-30467b81631f)
 
 Also, **elitism** was applied, meaning that the best elements from the previous generation are always kept to create the next one. The number of elements chosen depends on the Elite size, [20 in this case](#parameters).
 
@@ -114,5 +116,43 @@ Crossover is the actual creation of new solutions from the ones chosen in the pr
 
 ##### 5. Mutations
 
-In our case mutations are seen as random swapping between cities in the CSP solution. Since the visiting order is crucial for the fitness function, swapping nodes can randomly improve a CSP.
+In our case mutations are random swappings between cities in the CSP solution. Since the visiting order is crucial for the fitness function, swapping nodes can randomly improve a CSP.
 
+The swapping is triggered if a random number is less than what we've set as [mutation rate](#parameters).
+
+##### 6. Local Search
+
+After all the GA generations, a Local Search (LS) is performed on the best solution to **avoid**:
+
+- A non-optimized visiting order of nodes in the resulting CSP;
+- Nodes that cover only themselves;
+- A CSP that doesn't cover at least 30% of population.
+
+The LS has three steps:
+
+1. 2-opt to optimize the visting order;
+2. Removal of unnecessary nodes. It always leads to an improvement, due to the [Triangle inequality](https://en.wikipedia.org/wiki/Triangle_inequality). In fact, removing a node deletes two arcs and creates a new arc shorther than the sum of the two removed;
+3. If the covered population is < 30%, greedy search of the best nodes until the 30% quota is met.
+
+### GA with 2-opt or 3-opt
+
+They can be called by pressing on `GA + 2-OPT` or `GA + 3-OPT`. These two approaches have already been explained individually. Their merging could lead to further improvements on the results, but we didn't track its performances due to a lack of time.
+
+## Results
+
+The profit varies as follows with the different approaches:
+
+![results](https://github.com/alesordo/Covering-Salesman-Problem/assets/85616887/c89f76fb-8f8f-4873-84c3-a7494c788f01)
+
+The GA gave the best results. Note that the best result is achieved by applying LS and 2-opt after each step. While this is not on the code, you can do it by simply editing the code.
+
+## Improvements
+
+Some of the improvements to develop are:
+- Changing function to calculate the revenue. As for now, it has a $O(n)$ time complexity, that leads to a heavy resources usage;
+- Finding a compromise between the total number of people and the number of generations for the GA;
+- Test the results with different values of $Delta$, $c$ and $r$.
+
+## Credits
+
+This project was realized by Alessandro Amato (@aleama98) and Alessio Sordo (@alesordo), both from the University of Ferrara (Italy) 😃
