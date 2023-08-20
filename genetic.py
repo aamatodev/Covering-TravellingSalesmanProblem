@@ -18,7 +18,7 @@ def createRoute(cityList, population):
     route = []
     totalPopulation = np.sum(population)
     MinCover = random.randint(30, 99) / 100
-    print(MinCover)
+    print('Minimum people to be vaccinated: ', MinCover)
     coverage = 0
     coveredCities = [0] * len(cityList)
     alreadyVisited = []
@@ -195,7 +195,6 @@ def RemoveUneddedNodes(bestRoute, cityList, population):
     bestComputedRoute = bestRoute
     for idx, city in enumerate(bestRoute):
         if idx != 0 and idx != len(bestRoute):
-            print(city.population)
             bkPath = bestComputedRoute.copy()
             bestComputedRoute.remove(city)
             newPath = bestComputedRoute

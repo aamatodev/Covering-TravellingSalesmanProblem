@@ -23,7 +23,7 @@ def _improve(bestPath, bestGain, cityList, size, population, delta, refund):
                 saved = a, c
                 bestGain = change
 
-    print(saved, bestGain)
+    print(saved, 'Improved Total Gain: ', bestGain)
 
     return saved, bestGain
 
@@ -55,5 +55,6 @@ def TwoOPT(cityList, population, greedyPath, greedyGain, delta, refund):
             bestPath = exchange(bestPath, a, c)
             bestGain = bestChange
 
-        print(bestPath, bestGain)
+    print('Best Path: ', bestPath)
+    print('Best Total Gain: ', bestGain)
     return bestPath, bestGain
